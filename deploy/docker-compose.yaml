@@ -1,0 +1,16 @@
+version: "3.9"
+
+networks:
+  kafka-net:
+    driver: bridge
+
+include:
+  - app/app.yaml
+  - redis/redis.yaml
+  - mysql/mysql.yaml
+  - mysql/volumes.yaml
+  - kafka/kafka1.yaml
+  - kafka/kafka2.yaml
+  - kafka/kafka3.yaml
+  - kafka/kafka-ui.yaml
+  - schema-registry/schema-registry.yaml

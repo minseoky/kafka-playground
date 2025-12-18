@@ -1,0 +1,42 @@
+services:
+  app:
+    image: eclipse-temurin:17-jre
+    container_name: local-app
+    working_dir: /app
+    restart: unless-stopped
+
+    volumes:
+      - ../../build/libs/app.jar:/app/app.jar:ro
+
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+
+      JAVA_OPTS: >
+        -Xms256m
+        -Xmx512m
+
+    command:
+      - sh
+      - -c
+      - |
+        ls -al /app && java  -jar /app/app.jar
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+
+    ports:
+      - 8080:8080
+    networks:
+      - kafka-net
+
