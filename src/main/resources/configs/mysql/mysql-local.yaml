@@ -1,0 +1,8 @@
+spring:
+  # DB 연결
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Local Docker
+    url: jdbc:mysql://mysql:3306/kafka-poc?useSSL=true&useUnicode=true&rewriteBatchedStatements=true&logger=Slf4JLogger&maxQuerySizeToLog=999999&zeroDateTimeBehavior=convertToNull&useServerPrepStmts=true
+    username: admin
+    password: admin12!@

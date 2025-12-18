@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    default: local
+    active: local
+  config:
+    import:
+      - classpath:configs/jpa/jpa-local.yaml
+      - classpath:configs/mysql/mysql-local.yaml
+      - classpath:configs/redis/redis-local.yaml
+      - classpath:configs/kafka/kafka-local.yaml

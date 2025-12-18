@@ -1,0 +1,56 @@
+spring:
+  kafka:
+    bootstrap-servers:
+      - kafka1:9092
+      - kafka2:9092
+      - kafka3:9092
+
+    # ===== 공통(Producer/Consumer) =====
+    properties:
+      request.timeout.ms: 30000
+      default.api.timeout.ms: 30000
+
+    # ===== Producer =====
+    producer:
+      acks: all
+      retries: 10
+      # String 기반 메시지 기본값
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      # ===== EOS(Exactly Once) Producer 설정 =====
+      # enable.idempotence=true + acks=all 조합이 기본 전제
+      properties:
+        enable.idempotence: true
+        # KafkaClient 최신 버전 기준으로 idempotence 켜면 자동 조정되지만,
+        # 운영/디버깅 안정성을 위해 명시(권장) - 최대 5
+        max.in.flight.requests.per.connection: 5
+        schema.registry.url: http://schema-registry:8081
+      # 트랜잭션 사용 시 Spring Kafka가 transactional.id를 자동 생성하도록 prefix 지정
+      transaction-id-prefix: kafka-poc-local-
+
+    # ===== Consumer =====
+    consumer:
+      group-id: kafka-poc-local
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      # String 기반 메시지 기본값
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      # ===== EOS Consumer 설정 =====
+      # 커밋되지 않은(트랜잭션 미완료) 레코드는 읽지 않도록
+      properties:
+        isolation.level: read_committed
+        schema.registry.url: http://schema-registry:8081
+        specific.avro.reader: true
+
+    listener:
+      # enable-auto-commit=false일 때 수동 ack를 쓰려면 MANUAL 또는 MANUAL_IMMEDIATE 사용
+      ack-mode: manual
+      # 리스너가 죽었을 때 재시작/복구 관점에서 로그를 더 잘 남긴다
+      missing-topics-fatal: false
+
+# 로컬에서 로그를 좀 더 보고 싶으면
+logging:
+  level:
+    org.apache.kafka: INFO
+    org.springframework.kafka: INFO
